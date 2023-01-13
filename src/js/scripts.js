@@ -1,46 +1,27 @@
-// Create a class called Person
 class Person {
-    //Implement a greedy, partial and default constructor.
-    
-    constructor()
-    {
-        this.firstName = "John";
-        this.middleName = "Anonymous"
-        this.lastName = "Doe";
-        this.birthDate = new Date("2000-01-01");
-        this.gender = "Male";
-    }
-    /*
-    constructor(firstName, lastName)
-    {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthDate(new Date("2000-01-01"));
-    }
-
-    constructor(firstName, middleName, lastName, birthDate, gender)
+    constructor(firstName = "John", middleName = "Anonymous", lastName = "Doe", birthDate = new Date("2000-01-01"), gender = "Male", pet = new Pet())
     {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
-        this.birthDate(birthDate);
+        this.birthDate = birthDate;
         this.gender = gender;
+        // This stores an object of the Pet class.
+        this.pet = pet;
     }
-    */
-
-    // with a first name, middle name, last name and gender field
+    
     firstName;
     middleName;
     lastName;
     gender;
+    // This stores an object of the Pet class.
+    pet;
 
-    // and a birth date property
     #birthDate;
     get birthDate() {
         return this.#birthDate;
     }
     set birthDate(x) {
-        // Implement the birth date property to ensure the date is in the past.
         if (x > Date.now())
         {
             throw new Error("Birthdate must be in the past.");
@@ -51,41 +32,52 @@ class Person {
         }
     }
 
-    // Derive a full name property from the first name, last name and middle initial
     get fullName() {
         return `${this.firstName} ${this.middleName[0]}. ${this.lastName}`;
     }
 
-    // Derive an age property from the birth date.
     get age() {
         return new Date(Date.now()).getFullYear()-this.birthDate.getFullYear();
     }
 
-    // Implement a toString() method that will describe the person in an English sentence.
     toString() {
-        return `A ${this.age} year old person of the ${this.gender} gender, named ${this.fullName}.`;
+        return `A ${this.age} year old person of the ${this.gender} gender, named ${this.fullName}. ${this.firstName} owns ${this.pet}.`;
     }
 
-    // Implement an introduction() method that will introduce the person by the first name as an English sentence.
     introduction() {
         return `Hello, my name is ${this.firstName}!`;
     }
 }
 
-async function main() {
-    // This is where the code you're actually experimenting with goes.
-    
-    let prompt = "Please enter your name, or 'Exit' to quit: "
-    let name = await input(prompt);
-
-    let person = new Person();
-    output(person);
-
-    while (name != "Exit") 
+class Pet {
+    constructor(type = "Dog", name = "Fido")
     {
-        output("Hello, "+name+"!");
-        name = await input(prompt);
+        this.type = type;
+        this.name = name;
     }
+
+    type;
+    name;
+
+    toString() {
+        return `A ${this.type} named ${this.name}.`;
+    }
+}
+
+async function main() {
+    let defaultPerson = new Person();
+    output(defaultPerson);
+    // Stringify allows us to convert a JavaScript object into a plaintext representation thereof (JavaScript Object Notation).
+    let jsonText = JSON.stringify(defaultPerson);
+    output(jsonText, "debug");
+    // If we want to then bring that back into JavaScript, we can use Parse.
+    let parsedJSON = JSON.parse(jsonText);
+
+    // Parse will bring the data in, but as JSON does not store methods, if we want that functionality on our import object, we will need to tell JavaScript to what class the imported object belongs.
+    let parsedPerson = Object.assign(new Person(), parsedJSON);
+    parsedPerson.pet = Object.assign(new Pet(), parsedPerson.pet);
+    output(parsedPerson);
+
 }
 
 
